@@ -2,9 +2,11 @@ package deathtest
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os/exec"
 	"reflect"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -25,8 +27,12 @@ func Run(t *testing.T) bool {
 		return true
 	}
 	name := reflect.ValueOf(*t).FieldByName("name").String()
+	maxprocs := runtime.GOMAXPROCS(0)
+	if maxprocs != 1 {
+		name = name[:len(name)-len(fmt.Sprintf("-%d", maxprocs))]
+	}
 
-	args := []string{"go", "test", "-deathtest.running", "-run", name}
+	args := []string{"go", "test", "-deathtest.running", "-run", "^" + name + "$"}
 	log.Printf("deathtest.Run(%v)", args)
 	p := exec.Command(args[0], args[1:]...)
 	w := deathtestWriter{}
