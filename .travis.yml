@@ -6,3 +6,5 @@ notifications:
       - peter.waller@cern.ch
     on_success: always
     on_failure: always
+
+script: "go test -v -cpu 1,2,4"
